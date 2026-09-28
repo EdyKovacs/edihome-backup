@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EdiHome.Backup/EdiHome.Backup.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EdiHome.Backup.Tests/EdiHome.Backup.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,14 @@
+{
+  "mounts": [
+    {
+      "name": "Backup HDD 1 TB",
+      "mountPoint": "/media/edi/data",
+      "uuid": "1834c93c-9b86-4d86-87a4-19b82e0532f8"
+    },
+    {
+      "name": "Backup HDD USB 4 TB",
+      "mountPoint": "/mnt/backup4tb",
+      "uuid": "32b60a5c-3f9c-40d6-912d-e991b2e81668"
+    }
+  ]
+}
