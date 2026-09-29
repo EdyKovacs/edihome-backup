@@ -1,0 +1,38 @@
+{
+  "mounts": [
+    {
+      "name": "Backup HDD 1 TB",
+      "mountPoint": "/media/edi/data",
+      "uuid": "1834c93c-9b86-4d86-87a4-19b82e0532f8"
+    },
+    {
+      "name": "Backup HDD USB 4 TB",
+      "mountPoint": "/mnt/backup4tb",
+      "uuid": "32b60a5c-3f9c-40d6-912d-e991b2e81668"
+    }
+  ],
+  "backup": {
+    "oldBase": "/media/edi/data/backup-box",
+    "newBase": "/mnt/backup4tb/backup-box",
+    "resticPasswordFile": "/home/edi/.config/restic/passphrase",
+    "nextcloudExcludesFile": "/home/edi/.config/nextcloud-backup/rsync-excludes.txt",
+    "cloudapps": {
+      "target": "eduard@192.168.0.193",
+      "keyFile": "/home/edi/.ssh/id_ed25519_cloudapps_backup"
+    },
+    "proxmox": {
+      "target": "root@192.168.0.204",
+      "keyFile": "/home/edi/.ssh/id_ed25519_proxmox_backupstatus"
+    },
+    "cloudDockerDir": "/home/eduard/home-server-main/docker",
+    "nextcloudDumpScript": "/home/eduard/home-server-main/scripts/backups/nextcloud-db-dump.sh",
+    "immichDumpScript": "/home/eduard/home-server-main/scripts/backups/immich-db-dump.sh",
+    "nextcloudMount": "192.168.0.137:/mnt/important/nextcloud-data",
+    "immichMount": "192.168.0.137:/mnt/important/immich-data",
+    "proxmoxDumpDir": "/mnt/pve/nas-backup/dump",
+    "vmIds": [100, 101, 102, 103, 104],
+    "surveillanceSource": "/mnt/cloud/frigate/recordings",
+    "surveillanceMount": "192.168.0.137:/mnt/surveillance/frigate",
+    "mqttEnvFile": "/home/edi/.config/edihome/mqtt.env"
+  }
+}
