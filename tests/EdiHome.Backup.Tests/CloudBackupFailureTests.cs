@@ -39,8 +39,10 @@ public class CloudBackupFailureTests
         }
     }
 
-    [Fact]
-    public async Task SuccessfulManualNextcloudTestChecksRepoWithoutPruning()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task SuccessfulManualNextcloudTestUsesConfiguredRetention(bool allowPrune)
     {
         var root = Path.Combine(Path.GetTempPath(), "edihome-backup-tests-" + Guid.NewGuid().ToString("N"));
         var oldMount = Path.Combine(root, "old").Replace('\\', '/');
@@ -60,11 +62,19 @@ public class CloudBackupFailureTests
             var runner = new FailedSnapshotRunner(newBase, failSnapshot: false);
             var cycle = new BackupCycle(new BackupSettings(mounts, plan), runner, new MountedReader(oldMount, newMount));
 
-            await cycle.RunAsync(true, TextWriter.Null, onlyComponent: "nextcloud", allowPrune: false);
+            await cycle.RunAsync(true, TextWriter.Null, onlyComponent: "nextcloud", allowPrune: allowPrune);
 
             Assert.Contains(runner.Executed, command => command.Executable == "restic" && command.Arguments.Contains("backup"));
             Assert.Contains(runner.Executed, command => command.Executable == "restic" && command.Arguments.Contains("check"));
-            Assert.DoesNotContain(runner.Executed, command => command.Executable == "restic" && command.Arguments.Contains("forget"));
+            if (allowPrune)
+            {
+                var retention = Assert.Single(runner.Executed, command => command.Executable == "restic" && command.Arguments.Contains("forget"));
+                Assert.Equal(["forget", "--keep-weekly", "8", "--group-by", "host,tags", "--prune"], retention.Arguments);
+            }
+            else
+            {
+                Assert.DoesNotContain(runner.Executed, command => command.Executable == "restic" && command.Arguments.Contains("forget"));
+            }
         }
         finally
         {

@@ -298,7 +298,12 @@ public sealed class BackupCycle(BackupSettings settings, IExternalCommandRunner 
         await ExecuteAsync($"{name} snapshot", new ExternalCommand("restic", ["backup", stage, "--tag", name, "--tag", "weekly"], Environment: environment), output, cancellationToken);
         await ExecuteAsync($"{name} repository check", new ExternalCommand("restic", ["check"], Environment: environment), output, cancellationToken);
         if (allowPrune)
-            await ExecuteAsync($"{name} retention", new ExternalCommand("restic", ["forget", retention, count, "--prune"], Environment: environment), output, cancellationToken);
+        {
+            var arguments = new List<string> { "forget", retention, count };
+            if (retention == "--keep-weekly") arguments.AddRange(["--group-by", "host,tags"]);
+            arguments.Add("--prune");
+            await ExecuteAsync($"{name} retention", new ExternalCommand("restic", arguments, Environment: environment), output, cancellationToken);
+        }
         else
             await output.WriteLineAsync($"Skipped {name} retention for this manual test");
     }

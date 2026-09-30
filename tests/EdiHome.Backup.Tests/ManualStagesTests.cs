@@ -40,6 +40,32 @@ public class ManualStagesTests
     }
 
     [Fact]
+    public async Task ProxmoxRetentionKeepsTwoLatestWithoutWeeklyGrouping()
+    {
+        await WithTemporaryCycle(async (cycle, commands) =>
+        {
+            await cycle.RunAsync(true, TextWriter.Null, onlyComponent: "proxmox", allowPrune: true);
+
+            var retention = Assert.Single(commands.Executed,
+                command => command.Executable == "restic" && command.Arguments.Contains("forget"));
+            Assert.Equal(["forget", "--keep-last", "2", "--prune"], retention.Arguments);
+        });
+    }
+
+    [Fact]
+    public async Task SurveillanceRetentionGroupsWeeklySnapshotsAcrossPaths()
+    {
+        await WithTemporaryCycle(async (cycle, commands) =>
+        {
+            await cycle.RunAsync(true, TextWriter.Null, onlyComponent: "surveillance", allowPrune: true);
+
+            var retention = Assert.Single(commands.Executed,
+                command => command.Executable == "restic" && command.Arguments.Contains("forget"));
+            Assert.Equal(["forget", "--keep-weekly", "8", "--group-by", "host,tags", "--prune"], retention.Arguments);
+        });
+    }
+
+    [Fact]
     public async Task EqualSizeButOlderProxmoxFilesStillNeedTransferSpace()
     {
         const long reserve = 10L * 1024 * 1024 * 1024;
